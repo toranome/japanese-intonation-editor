@@ -8,11 +8,27 @@
         <script src="js/libs/jquery.min.js"></script>
         <script src="js/libs/knockout-min.js"></script>
 
-        <div id="japanese-display" data-bind="foreach: displayText">
-            <span data-bind="attr: {'class': mark}, text: text"></span>
-        </div>
+        <table>
+            <tr>
+                <!-- ko foreach: displayText -->
+                <td data-bind="attr: {'class': mark}, text: text"></td>
+                <!-- /ko -->
+                <td></td>
+            </tr>
+            <tr>
+                <!-- ko foreach: displayText -->
+                <td>
+                    <button data-bind="click: $parent.toggleIntonation"></span>
+                </td>
+                <!-- /ko -->
+                <td>
+                    <button data-bind="click: toggleFinalIntonation"></span>
+                </td>
+            </tr>
+        </table>
 
-        <textarea id="japanese-input"></textarea>
+        <textarea id="japanese-input" data-bind="textInput: inputText"></textarea>
+        <pre data-bind="text: textAsHtml"></pre>
 
         <script src="js/app.js"></script>
     </body>

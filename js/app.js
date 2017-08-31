@@ -13,7 +13,7 @@ function AppViewModel() {
     };
 
     self.inputText = ko.observable("ひらがなで かいて");
-    self.highIndices = ko.observableArray([0,1,1,0,0,0,1,0,0]);
+    self.highIndices = ko.observableArray([0,1,1,0,0,0,1,0,0,0]);
 
     self.getClassAt = function(index) {
         if (self.highIndices().length <= index || !self.highIndices()[index]) {
@@ -27,7 +27,36 @@ function AppViewModel() {
         return MarkCssClass.High;
     };
 
+    self.toggleFinalIntonation = function() {
+        if (self.highIndices().length != self.inputText.length + 1) {
+            console.warn("The number of intonation buttons should be one more than the number of characters");
+        }
+        var buffer = self.highIndices();
+        buffer[buffer.length-1] = 1 - buffer[buffer.length-1];
+        self.highIndices(buffer);
+    }
+
+    self.toggleIntonation = function(item) {
+        var buffer = self.highIndices();
+        buffer[item.key] = 1 - buffer[item.key];
+        self.highIndices(buffer);
+    }
+
     self.displayText = ko.computed(function(){
+        var results = [];
+
+        for(var i=0; i<self.inputText().length; i++) {
+            results.push({
+                text: self.inputText()[i],
+                mark: self.getClassAt(i),
+                key: i
+            });
+        }
+
+        return results;
+    });
+
+    self.compactDisplayText = ko.computed(function(){
         var results = [];
 
         for(var i=0; i<self.inputText().length; i++) {
@@ -45,7 +74,7 @@ function AppViewModel() {
 
             item = {
                 text: self.inputText()[i],
-                mark: self.getClassAt(i),
+                mark: self.getClassAt(i)
             };
 
             results.push(item);
@@ -70,7 +99,7 @@ function AppViewModel() {
 
     self.textAsHtml = ko.computed(function() {
         var results = "";
-        self.displayText().forEach(function(item){
+        self.compactDisplayText().forEach(function(item){
             results += self.asHtml(item);
         });
         return results;
