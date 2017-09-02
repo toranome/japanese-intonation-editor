@@ -11,18 +11,14 @@
         <table>
             <tr>
                 <!-- ko foreach: displayText -->
-                <td data-bind="attr: {'class': mark}, text: text"></td>
-                <!-- /ko -->
-                <td></td>
-            </tr>
-            <tr>
-                <!-- ko foreach: displayText -->
                 <td>
-                    <button data-bind="click: $parent.toggleIntonation"></span>
+                    <span class="clickable" data-bind="css: css, text: text, click: $parent.toggleIntonation"></span>
                 </td>
                 <!-- /ko -->
                 <td>
-                    <button data-bind="click: toggleFinalIntonation"></span>
+                    <!-- ko with: placeholderCharacter -->
+                    <span class="clickable placeholder" data-bind="css: css, text: text, click: $parent.toggleFinalIntonation"></span>
+                    <!-- /ko -->
                 </td>
             </tr>
         </table>

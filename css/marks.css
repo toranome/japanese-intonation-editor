@@ -23,3 +23,12 @@
     border-right-style: solid;
     border-bottom-style: none;
 }
+
+.placeholder {
+    color: #aaaaaa;
+    border-color: #aaaaaa;
+}
+
+.clickable {
+    cursor: pointer;
+}

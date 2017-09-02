@@ -27,6 +27,17 @@ function AppViewModel() {
         return MarkCssClass.High;
     };
 
+    self.placeholderCharacter = ko.computed(function(){
+        var buffer = self.highIndices();
+        var placeholderClass = (buffer[buffer.length-1]) == 0 ? MarkCssClass.None : MarkCssClass.High;
+        var result = {
+            text: "〇",
+            css: {}
+        }
+        result.css[placeholderClass] = true;
+        return result;
+    });
+
     self.toggleFinalIntonation = function() {
         if (self.highIndices().length != self.inputText.length + 1) {
             console.warn("The number of intonation buttons should be one more than the number of characters");
@@ -46,11 +57,13 @@ function AppViewModel() {
         var results = [];
 
         for(var i=0; i<self.inputText().length; i++) {
-            results.push({
+            var result = {
                 text: self.inputText()[i],
-                mark: self.getClassAt(i),
+                css: {},
                 key: i
-            });
+            }
+            result.css[self.getClassAt(i)] = true;
+            results.push(result);
         }
 
         return results;
@@ -62,7 +75,7 @@ function AppViewModel() {
         for(var i=0; i<self.inputText().length; i++) {
             var item = results.pop();
 
-            if (item != undefined && item.mark == self.getClassAt(i)) {
+            if (item != undefined && item.css[self.getClassAt(i)]) {
                 item.text += self.inputText()[i];
                 results.push(item);
                 continue;
@@ -74,8 +87,9 @@ function AppViewModel() {
 
             item = {
                 text: self.inputText()[i],
-                mark: self.getClassAt(i)
+                css: {}
             };
+            item.css[self.getClassAt(i)] = true;
 
             results.push(item);
         }
@@ -84,15 +98,15 @@ function AppViewModel() {
     });
 
     self.asHtml = function(item) {
-        if (item.mark == MarkCssClass.None) {
+        if (item.css[MarkCssClass.None]) {
             return item.text;
         }
 
-        if (item.mark == MarkCssClass.High) {
+        if (item.css[MarkCssClass.High]) {
             return "<high>" + item.text + "</high>";
         }
 
-        if (item.mark == MarkCssClass.Drop) {
+        if (item.css[MarkCssClass.Drop]) {
             return "<drop>" + item.text + "</drop>";
         }
     };
