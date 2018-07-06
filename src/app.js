@@ -1,123 +1,46 @@
-function AppViewModel() {
-    var self = this;
 
-    var MarkElement = {
-        High: "high",
-        Drop: "drop"
-    };
+let Inline = Quill.import('blots/inline');
 
-    var MarkCssClass = {
-        None: "mark mark-none",
-        High: "mark mark-high",
-        Drop: "mark mark-drop"
-    };
+class HighAccentBlot extends Inline { }
+HighAccentBlot.blotName = 'high';
+HighAccentBlot.tagName = 'high';
 
-    self.inputText = ko.observable("ひらがなで かいて");
-    self.highIndices = ko.observableArray([0,1,1,0,0,0,1,0,0,0]);
+class DropAccentBlot extends Inline { }
+DropAccentBlot.blotName = 'drop';
+DropAccentBlot.tagName = 'drop';
 
-    self.getClassAt = function(index) {
-        if (self.highIndices().length <= index || !self.highIndices()[index]) {
-            return MarkCssClass.None;
-        }
+class LowAccentBlot extends Inline { }
+LowAccentBlot.blotName = 'low';
+LowAccentBlot.tagName = 'low';
 
-        if (!self.highIndices()[index+1]) {
-            return MarkCssClass.Drop;
-        }
+class RiseAccentBlot extends Inline { }
+RiseAccentBlot.blotName = 'rise';
+RiseAccentBlot.tagName = 'rise';
 
-        return MarkCssClass.High;
-    };
+Quill.register(HighAccentBlot);
+Quill.register(DropAccentBlot);
+Quill.register(LowAccentBlot);
+Quill.register(RiseAccentBlot);
 
-    self.placeholderCharacter = ko.computed(function(){
-        var buffer = self.highIndices();
-        var placeholderClass = (buffer[buffer.length-1]) == 0 ? MarkCssClass.None : MarkCssClass.High;
-        var result = {
-            text: "〇",
-            css: {}
-        }
-        result.css[placeholderClass] = true;
-        return result;
-    });
-
-    self.toggleFinalIntonation = function() {
-        if (self.highIndices().length != self.inputText.length + 1) {
-            console.warn("The number of intonation buttons should be one more than the number of characters");
-        }
-        var buffer = self.highIndices();
-        buffer[buffer.length-1] = 1 - buffer[buffer.length-1];
-        self.highIndices(buffer);
+// Another possibility below
+/*
+class AccentBlot extends Inline {
+    static create(value) {
+        let node = super.create();
+        setAccentType(value);
+        return node;
     }
 
-    self.toggleIntonation = function(item) {
-        var buffer = self.highIndices();
-        buffer[item.key] = 1 - buffer[item.key];
-        self.highIndices(buffer);
+    static setAccentType(value) {
+        if (['high', 'low', 'rising', 'falling', 'none'].includes(value)) {
+            node.setAttribute('data-accent-type', value);
+        }
+
+        console.error('Invalid type ' + value);
     }
-
-    self.displayText = ko.computed(function(){
-        var results = [];
-
-        for(var i=0; i<self.inputText().length; i++) {
-            var result = {
-                text: self.inputText()[i],
-                css: {},
-                key: i
-            }
-            result.css[self.getClassAt(i)] = true;
-            results.push(result);
-        }
-
-        return results;
-    });
-
-    self.compactDisplayText = ko.computed(function(){
-        var results = [];
-
-        for(var i=0; i<self.inputText().length; i++) {
-            var item = results.pop();
-
-            if (item != undefined && item.css[self.getClassAt(i)]) {
-                item.text += self.inputText()[i];
-                results.push(item);
-                continue;
-            }
-
-            if (item != undefined) {
-                results.push(item);
-            }
-
-            item = {
-                text: self.inputText()[i],
-                css: {}
-            };
-            item.css[self.getClassAt(i)] = true;
-
-            results.push(item);
-        }
-
-        return results;
-    });
-
-    self.asHtml = function(item) {
-        if (item.css[MarkCssClass.None]) {
-            return item.text;
-        }
-
-        if (item.css[MarkCssClass.High]) {
-            return "<high>" + item.text + "</high>";
-        }
-
-        if (item.css[MarkCssClass.Drop]) {
-            return "<drop>" + item.text + "</drop>";
-        }
-    };
-
-    self.textAsHtml = ko.computed(function() {
-        var results = "";
-        self.compactDisplayText().forEach(function(item){
-            results += self.asHtml(item);
-        });
-        return results;
-    });
+    
+    static formats(node) {
+        node.setAttribute('data-accent-type', 'high');
+    }
 }
-
-ko.applyBindings(new AppViewModel());
+*/

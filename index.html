@@ -2,30 +2,67 @@
 <html>
     <head>
         <meta charset="utf-8"/>
-        <link rel="stylesheet" type="text/css" href="css/marks.css"/>
+
+        <link rel="stylesheet" type="text/css" href="css/accents.css"/>
+        <link href="lib/quill/quill.core.css" rel="stylesheet">
+
+        <script src="lib/jquery.min.js"></script>
+        <script src="lib/quill/quill.core.js"></script>
+        
+        <script src="src/app.js"></script>
     </head>
     <body>
-        <script src="lib/jquery.min.js"></script>
-        <script src="lib/knockout-min.js"></script>
 
-        <table>
-            <tr>
-                <!-- ko foreach: displayText -->
-                <td>
-                    <span class="clickable" data-bind="css: css, text: text, click: $parent.toggleIntonation"></span>
-                </td>
-                <!-- /ko -->
-                <td>
-                    <!-- ko with: placeholderCharacter -->
-                    <span class="clickable placeholder" data-bind="css: css, text: text, click: $parent.toggleFinalIntonation"></span>
-                    <!-- /ko -->
-                </td>
-            </tr>
-        </table>
+        <button id="button-accent-high">High Accent</button>
+        <button id="button-accent-drop">Drop Accent</button>
+        <button id="button-accent-low">Low Accent</button>
+        <button id="button-accent-rise">Rise Accent</button>
+        <button id="button-accent-clear">Clear Accent</button>
+        
+        <div id="editor">
+        <p>ひらがなで かいて</p>
+        </div>
 
-        <textarea id="japanese-input" data-bind="textInput: inputText"></textarea>
-        <pre data-bind="text: textAsHtml"></pre>
+        <pre id="accent-html"></pre>
 
-        <script src="src/app.js"></script>
+        <!-- Initialize Quill editor and events -->
+        <script>
+            var quill = new Quill('#editor');
+
+            $('#button-accent-high').click(function() {
+                quill.format('drop', false);
+                quill.format('low', false);
+                quill.format('rise', false);
+                quill.format('high', true);
+            });
+            $('#button-accent-drop').click(function() {
+                quill.format('high', false);
+                quill.format('low', false);
+                quill.format('rise', false);
+                quill.format('drop', true);
+            });
+            $('#button-accent-low').click(function() {
+                quill.format('high', false);
+                quill.format('drop', false);
+                quill.format('rise', false);
+                quill.format('low', true);
+            });
+            $('#button-accent-rise').click(function() {
+                quill.format('high', false);
+                quill.format('drop', false);
+                quill.format('low', false);
+                quill.format('rise', true);
+            });
+            $('#button-accent-clear').click(function() {
+                quill.format('high', false);
+                quill.format('drop', false);
+                quill.format('low', false);
+                quill.format('rise', false);
+            });
+
+            quill.on('text-change', function() {
+                $('#accent-html').text($('#editor p').html());
+            });
+        </script>
     </body>
 </html>

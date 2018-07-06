@@ -1,0 +1,14 @@
+high {
+    border-top: solid purple 1px;
+}
+drop {
+    border-top: solid red 1px;
+    border-right: solid red 1px;
+}
+low {
+    border-bottom: solid green 1px;
+}
+rise {
+    border-bottom: solid blue 1px;
+    border-right: solid blue 1px;
+}
