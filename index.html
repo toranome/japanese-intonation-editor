@@ -23,7 +23,7 @@
         <p>ひらがなで かいて</p>
         </div>
 
-        <pre id="accent-html"></pre>
+        <pre id="accent-html">ひらがなで かいて</pre>
 
         <!-- Initialize Quill editor and events -->
         <script>
@@ -60,8 +60,13 @@
                 quill.format('rise', false);
             });
 
-            quill.on('text-change', function() {
-                $('#accent-html').text($('#editor p').html());
+            quill.on('text-change', function(delta, oldDelta) {
+                let text = "";
+                $('#editor p').each(function(i, p){
+                    text += '\n';
+                    text += $(p).html();
+                });
+                $('#accent-html').text(text);
             });
         </script>
     </body>
