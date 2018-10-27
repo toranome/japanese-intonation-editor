@@ -4,70 +4,54 @@
         <meta charset="utf-8"/>
 
         <link rel="stylesheet" type="text/css" href="css/accents.css"/>
-        <link href="lib/quill/quill.core.css" rel="stylesheet">
+        <link href="lib/quill/quill.snow.css" rel="stylesheet">
 
         <script src="lib/jquery.min.js"></script>
-        <script src="lib/quill/quill.core.js"></script>
+        <script src="lib/quill/quill.js"></script>
         
         <script src="src/app.js"></script>
     </head>
     <body>
-
-        <button id="button-accent-high">High Accent</button>
-        <button id="button-accent-drop">Drop Accent</button>
-        <button id="button-accent-low">Low Accent</button>
-        <button id="button-accent-rise">Rise Accent</button>
-        <button id="button-accent-clear">Clear Accent</button>
-        
         <div id="editor">
-        <p>ひらがなで かいて</p>
+            <p>ひらがなで　かいて</p>
         </div>
 
-        <pre id="accent-html">ひらがなで かいて</pre>
+        <pre id="accent-html">ひらがなで　かいて</pre>
 
         <!-- Initialize Quill editor and events -->
         <script>
-            var quill = new Quill('#editor');
+            var toolbarOptions = {
+                'container': [
+                    ['bold', 'strike'],
+                    [
+                        {accent: 'high'},
+                        {accent: 'drop'},
+                        {accent: 'clear'}]],
+                'handlers': {
+                    'accent': onClickAccent
+                }
+            };
 
-            $('#button-accent-high').click(function() {
-                quill.format('drop', false);
-                quill.format('low', false);
-                quill.format('rise', false);
-                quill.format('high', true);
-            });
-            $('#button-accent-drop').click(function() {
-                quill.format('high', false);
-                quill.format('low', false);
-                quill.format('rise', false);
-                quill.format('drop', true);
-            });
-            $('#button-accent-low').click(function() {
-                quill.format('high', false);
-                quill.format('drop', false);
-                quill.format('rise', false);
-                quill.format('low', true);
-            });
-            $('#button-accent-rise').click(function() {
-                quill.format('high', false);
-                quill.format('drop', false);
-                quill.format('low', false);
-                quill.format('rise', true);
-            });
-            $('#button-accent-clear').click(function() {
-                quill.format('high', false);
-                quill.format('drop', false);
-                quill.format('low', false);
-                quill.format('rise', false);
+            var quill = new Quill('#editor', {
+                modules: {
+                    toolbar: toolbarOptions
+                },
+                theme: 'snow'
             });
 
-            quill.on('text-change', function(delta, oldDelta) {
-                let text = "";
-                $('#editor p').each(function(i, p){
-                    text += '\n';
-                    text += $(p).html();
-                });
-                $('#accent-html').text(text);
-            });
+            quill.keyboard.addBinding({key: 'H', shortKey: true}, getKeyBindingHandler('high'));
+            quill.keyboard.addBinding({key: 'D', shortKey: true}, getKeyBindingHandler('drop'));
+
+            quill.keyboard.addBinding({key: 'G', shortKey: true}, function(range, context) {
+                this.quill.format('accent', false);
+            })
+
+
+            quill.on('text-change', getTextChangeCallback('#accent-html', quill));
+
+            $('button.ql-accent[value="high"]').text('H');
+            $('button.ql-accent[value="drop"]').text('D');
+            $('button.ql-accent[value="clear"]').text('G');
         </script>
     </body>
 </html>

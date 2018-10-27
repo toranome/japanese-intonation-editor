@@ -1,46 +1,61 @@
+// See https://github.com/quilljs/parchment
 
 let Inline = Quill.import('blots/inline');
+let Parchment = Quill.import('parchment');
+let Scope = Parchment.Scope
+let ClassAttributor = Parchment.Attributor.Class
 
-class HighAccentBlot extends Inline { }
-HighAccentBlot.blotName = 'high';
-HighAccentBlot.tagName = 'high';
+let startTags = {
+    'high': '<span class="high">',
+    'drop': '<span class="drop">'
+};
 
-class DropAccentBlot extends Inline { }
-DropAccentBlot.blotName = 'drop';
-DropAccentBlot.tagName = 'drop';
+let endTags = {
+    'high': '</span>',
+    'drop': '</span>'
+};
 
-class LowAccentBlot extends Inline { }
-LowAccentBlot.blotName = 'low';
-LowAccentBlot.tagName = 'low';
+function getTextChangeCallback(htmlDisplaySelector, quill) {
+    return function(delta, oldDelta) {
+        let fullDelta = quill.editor.delta;
+        let textBuilder = [];
 
-class RiseAccentBlot extends Inline { }
-RiseAccentBlot.blotName = 'rise';
-RiseAccentBlot.tagName = 'rise';
+        fullDelta.forEach(function(d) {
+            if (d.attributes && d.attributes['accent']) {
+                let accent = d.attributes['accent'];
+                textBuilder.push(startTags[accent]);
+                textBuilder.push(d.insert);
+                textBuilder.push(endTags[accent]);
+            }
+            else {
+                textBuilder.push(d.insert);
+            }
+        });
 
-Quill.register(HighAccentBlot);
-Quill.register(DropAccentBlot);
-Quill.register(LowAccentBlot);
-Quill.register(RiseAccentBlot);
-
-// Another possibility below
-/*
-class AccentBlot extends Inline {
-    static create(value) {
-        let node = super.create();
-        setAccentType(value);
-        return node;
-    }
-
-    static setAccentType(value) {
-        if (['high', 'low', 'rising', 'falling', 'none'].includes(value)) {
-            node.setAttribute('data-accent-type', value);
-        }
-
-        console.error('Invalid type ' + value);
-    }
-    
-    static formats(node) {
-        node.setAttribute('data-accent-type', 'high');
+        let text = textBuilder.join('');
+        $(htmlDisplaySelector).text(text);
     }
 }
-*/
+
+function onClickAccent(blotName) {
+    if (['high', 'drop'].some(function(v) { return v ==blotName; })) {
+        quill.format('accent', blotName);
+    }
+    else {
+        quill.format('accent', null);
+    }
+}
+
+function getKeyBindingHandler(accentType) {
+    return function(range, context) {
+        if (quill.getFormat(range)['accent'] == accentType) {
+            this.quill.format('accent', false);
+        }
+        else {
+            this.quill.format('accent', accentType);
+        }
+    }
+}
+
+let AccentAttributor = new ClassAttributor('accent', 'accent', { scope: Scope.INLINE });
+Quill.register(AccentAttributor);
